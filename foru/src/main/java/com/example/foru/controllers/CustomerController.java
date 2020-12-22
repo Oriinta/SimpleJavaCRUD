@@ -1,7 +1,7 @@
 package com.example.foru.controllers;
 
-import com.example.foru.entities.Person;
-import com.example.foru.repository.UserRepository;
+import com.example.foru.entities.Customer;
+import com.example.foru.repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,64 +14,64 @@ import org.springframework.web.bind.annotation.PostMapping;
 import javax.validation.Valid;
 
 @Controller
-public class UserController {
-    private final UserRepository userRepository;
+public class CustomerController {
+    private final CustomerRepository customerRepository;
 
     @Autowired
-    public UserController(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public CustomerController(CustomerRepository customerRepository) {
+        this.customerRepository = customerRepository;
     }
 
     @GetMapping()
     public String showIndex(Model model) {
-        model.addAttribute("persons", userRepository.findAll());
+        model.addAttribute("customers", customerRepository.findAll());
         return "index";
     }
 
     @GetMapping("/signup")
-    public String showSignUpForm(Person person) {
-        return "add-user";
+    public String showSignUpForm(Customer customer) {
+        return "add-customer";
     }
 
-    @PostMapping("/adduser")
-    public String addUser(@ModelAttribute ("person") @Valid Person person, BindingResult result, Model model) {
+    @PostMapping("/add")
+    public String addUser(@ModelAttribute ("customer") @Valid Customer customer, BindingResult result, Model model) {
         if (result.hasErrors()) {
-           return "add-user";
+           return "add-customer";
         }
 
-        userRepository.save(person);
-        model.addAttribute("persons", userRepository.findAll());
+        customerRepository.save(customer);
+        model.addAttribute("customers", customerRepository.findAll());
         return "redirect:";
     }
 
     @GetMapping("/edit/{id}")
     public String showUpdateForm(@PathVariable("id") long id, Model model) {
-        Person person = userRepository.findById(id)
+        Customer customer = customerRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid user Id:" + id));
 
-        model.addAttribute("person", person);
-        return "update-user";
+        model.addAttribute("customer", customer);
+        return "update-customer";
     }
 
     @PostMapping("/{id}")
-    public String updateUser(@PathVariable("id") long id, @Valid Person person,
+    public String updateUser(@PathVariable("id") long id, @Valid Customer customer,
                              BindingResult result, Model model) {
         if (result.hasErrors()) {
-            person.setId(id);
-            return "update-user";
+            customer.setId(id);
+            return "update-customer";
         }
 
-        userRepository.save(person);
-        model.addAttribute("persons", userRepository.findAll());
+        customerRepository.save(customer);
+        model.addAttribute("customers", customerRepository.findAll());
         return "redirect:";
     }
 
     @GetMapping("/{id}")
     public String deleteUser(@PathVariable("id") long id, Model model) {
-        Person person = userRepository.findById(id)
+        Customer customer = customerRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid user Id:" + id));
-        userRepository.delete(person);
-        model.addAttribute("persons", userRepository.findAll());
+        customerRepository.delete(customer);
+        model.addAttribute("customers", customerRepository.findAll());
         return "redirect:";
     }
 }
